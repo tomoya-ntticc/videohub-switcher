@@ -23,6 +23,7 @@ port = 9990
 sleeptime_seconds = 20
 timeout_seconds = 5
 input_channels = [5, 6, 7, 8, 9]
+streaming_channel = 11
 tn = telnetlib.Telnet(host, port, timeout_seconds)
 
 tn.read_until(b"END PRELUDE:")
@@ -32,7 +33,7 @@ print(f"Run {mode} control.")
 if mode == "Rotate":
     while True:
         for input in [0, 1, 2, 5, 6, 7, 8, 9]:
-            tn.write(("video output routing:\n10 %s\n\n" % input).encode('ascii'))
+            tn.write((f"video output routing:\n{streaming_channel} %s\n\n" % input).encode('ascii'))
             tn.read_until(b"ACK", timeout_seconds)
             time.sleep(1)
 elif mode == "Auto":
