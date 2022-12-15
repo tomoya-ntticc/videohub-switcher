@@ -3,46 +3,30 @@ import datetime
 import random
 import telnetlib
 
-host = "192.168.1.151"
-port = 9990
+import settings
 
-timeout_seconds = 5
-endtime_seconds = 7 * 60 * 60 
 
-streaming_output_channels = [11]
-streaming_input_channels = [4, 5, 8, 9]
+tn = telnetlib.Telnet(settings.IP_ADDRESS, settings.PORT, settings.TIMEOUT_SECONDS)
 
-portrait_output_channels = [4, 6]
-portrait_input_channels = [6, 7]
+streaming = settings.ROUTING["streaming"]
+portrait = settings.ROUTING["portrait"]
+landscape = settings.ROUTING["landscape"]
 
-landscape_output_channels = [5, 7, 8]
-landscape_input_channels = [4, 5, 8, 9]
-
-tn = telnetlib.Telnet(host, port, timeout_seconds)
-
-async def switch_channels(output_channels = [4, 5], input_channels = [6, 7], sleeptime_seconds = 1):
-    loop = asyncio.get_running_loop()
-    end_time = loop.time() + endtime_seconds 
+async def switch_channels(output_channels: list[int], input_channels: list[int], sleep_seconds: int = 1):
     while True:
-        if (loop.time() + 1.0) >= end_time:
-            break
-
         random.shuffle(input_channels)
         for index, output_channel in enumerate(output_channels):
             tn.write((f"video output routing:\n{output_channel} {input_channels[index]}\n\n").encode('ascii'))
-            tn.read_until(b"ACK", timeout_seconds)
+            tn.read_until(b"ACK", settings.TIMEOUT_SECOND)
         print(f"{datetime.datetime.now()} __ Switched channels, output:{output_channels}, input:{input_channels}")
-        await asyncio.sleep(sleeptime_seconds)
+        await asyncio.sleep(sleep_seconds)
 
 async def main():
     print(f"\n{datetime.datetime.now()} __ Start auto switching.\n")
     await asyncio.gather(
-        # # for streaming
-        switch_channels(streaming_output_channels, streaming_input_channels, 31),
-        # # for portrait
-        switch_channels(portrait_output_channels, portrait_input_channels, 23),
-        # for landscape
-        switch_channels(landscape_output_channels, landscape_input_channels, 47),
+        switch_channels(streaming["OUTPUT_CHANNELS"], streaming["INPUT_CHANNELS"], streaming["INTERVAL_SECONDS"]),
+        switch_channels(portrait["OUTPUT_CHANNELS"], portrait["INPUT_CHANNELS"], portrait["INTERVAL_SECONDS"]),
+        switch_channels(landscape["OUTPUT_CHANNELS"], landscape["INPUT_CHANNELS"], landscape["INTERVAL_SECONDS"]),
     )
     print(f"\n{datetime.datetime.now()} __ Finished auto switching.")
 
