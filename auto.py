@@ -10,12 +10,12 @@ timeout_seconds = 5
 endtime_seconds = 7 * 60 * 60 
 
 streaming_output_channels = [11]
-streaming_input_channels = [4, 5, 6, 7, 8, 9]
+streaming_input_channels = [4, 5, 8, 9]
 
-portrait_output_channels = [4, 5]
+portrait_output_channels = [4, 6]
 portrait_input_channels = [6, 7]
 
-landscape_output_channels = [6, 7, 8]
+landscape_output_channels = [5, 7, 8]
 landscape_input_channels = [4, 5, 8, 9]
 
 tn = telnetlib.Telnet(host, port, timeout_seconds)
