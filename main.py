@@ -17,7 +17,7 @@ async def switch_channels(output_channels: list[int], input_channels: list[int],
         random.shuffle(input_channels)
         for index, output_channel in enumerate(output_channels):
             tn.write((f"video output routing:\n{output_channel} {input_channels[index]}\n\n").encode('ascii'))
-            tn.read_until(b"ACK", settings.TIMEOUT_SECOND)
+            tn.read_until(b"ACK", settings.TIMEOUT_SECONDS)
         print(f"{datetime.datetime.now()} __ Switched channels, output:{output_channels}, input:{input_channels}")
         await asyncio.sleep(sleep_seconds)
 
